@@ -1,13 +1,968 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redoxreaktionen Learning Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redoxreaktionen</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      color: #2c3e50;
+      border-bottom: 3px solid #2c3e50;
+      padding-bottom: 10px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .nav button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ddd;
+      color: #333;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .nav button.aktiv {
+      background-color: #2c3e50;
+      color: white;
+    }
+
+    .seite { display: none; }
+    .seite.aktiv { display: block; }
+
+    video {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .gleichungen {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 15px;
+    }
+
+    .gleichungen td { padding: 8px 12px; }
+
+    .oxidation { color: #c0392b; font-weight: bold; }
+    .reduktion { color: #2471a3; font-weight: bold; }
+
+    .merke {
+      background-color: #f9f4e8;
+      border: 1px solid #e0d5b5;
+      border-radius: 6px;
+      padding: 18px 24px;
+      margin-top: 30px;
+      border-top: 4px solid #c8b560;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .merke p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .weiter-btn {
+      display: block;
+      margin-top: 30px;
+      margin-left: auto;
+      padding: 12px 28px;
+      background-color: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .weiter-btn:hover { background-color: #1a252f; }
+
+    .sonderzeichen-leiste {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #eef1fa;
+      border: 1px solid #b0bcdf;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .sonderzeichen-leiste span {
+      font-size: 13px;
+      color: #444;
+      font-weight: bold;
+      margin-right: 4px;
+    }
+
+    .sz-btn {
+      background-color: white;
+      border: 1px solid #b0bcdf;
+      border-radius: 5px;
+      padding: 4px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      color: #2c3e50;
+    }
+
+    .sz-btn:hover { background-color: #d5dcf5; }
+
+    .aufgabe {
+      background-color: white;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .aufgabe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      cursor: pointer;
+      user-select: none;
+      background-color: white;
+      border-radius: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .aufgabe-header:hover { background-color: #f0f4f8; }
+
+    .aufgabe-header.offen {
+      border-bottom: 2px solid #e8e8e8;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .aufgabe-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #2c3e50;
+    }
+
+    .aufgabe-pfeil {
+      font-size: 18px;
+      color: #2c3e50;
+      transition: transform 0.2s;
+    }
+
+    .aufgabe-pfeil.offen { transform: rotate(180deg); }
+
+    .aufgabe-inhalt {
+      display: none;
+      padding: 20px 24px;
+    }
+
+    .aufgabe-inhalt.offen { display: block; }
+
+    .wortgleichung {
+      font-style: italic;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    .freies-feld {
+      width: 100%;
+      border: none;
+      border-bottom: 2px solid #2c3e50;
+      background: transparent;
+      font-size: 15px;
+      font-family: Arial, sans-serif;
+      padding: 4px 6px;
+      outline: none;
+      margin-top: 6px;
+      box-sizing: border-box;
+      transition: border-bottom-color 0.2s, background-color 0.2s;
+    }
+
+    .freies-feld:focus {
+      border-bottom-color: #2980b9;
+      background-color: #f0f6ff;
+    }
+
+    .freies-feld.richtig {
+      border-bottom-color: #27ae60;
+      background-color: #eafaf1;
+      color: #1e8449;
+    }
+
+    .freies-feld.falsch {
+      border-bottom-color: #c0392b;
+      background-color: #fdedec;
+      color: #c0392b;
+    }
+
+    .feld-label {
+      font-size: 13px;
+      color: #555;
+      margin-top: 14px;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .hilfen {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hilfe-btn {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: left;
+      width: fit-content;
+    }
+
+    .hilfe-btn:hover { background-color: #e0e0e0; }
+
+    .hilfe-box {
+      background-color: #fffbea;
+      border: 1px solid #f0d060;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #6e5200;
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    .btn-reihe {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .pruefen-btn {
+      padding: 10px 22px;
+      background-color: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .pruefen-btn:hover { background-color: #1a252f; }
+
+    .loesung-btn {
+      padding: 10px 22px;
+      background-color: white;
+      color: #2c3e50;
+      border: 2px solid #2c3e50;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .loesung-btn:hover { background-color: #f0f0f0; }
+
+    .feedback {
+      margin-top: 12px;
+      font-size: 14px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .feedback.richtig-alle {
+      background-color: #eafaf1;
+      border-left: 4px solid #27ae60;
+      color: #1e8449;
+    }
+
+    .feedback.teilweise {
+      background-color: #fef9e7;
+      border-left: 4px solid #f39c12;
+      color: #7d6608;
+    }
+
+    .feedback.falsch-alle {
+      background-color: #fdedec;
+      border-left: 4px solid #c0392b;
+      color: #922b21;
+    }
+
+    .loesung {
+      background-color: #eaf4fb;
+      border-left: 4px solid #2980b9;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-top: 14px;
+      font-size: 15px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to Redoxreaktionen Learning Page</h1>
-    <p>This page is dedicated to the study of redox reactions.</p>
-    <!-- Additional content can be added here -->
+
+  <h1>Redoxreaktionen – Übungsphase</h1>
+
+  <div class="nav">
+    <button class="aktiv" onclick="zeigeSeite('erklaerung')">① Erklärung</button>
+    <button onclick="zeigeSeite('uebung')">② Übungsaufgaben</button>
+  </div>
+
+  <!-- SEITE 1: ERKLÄRUNG -->
+  <div id="erklaerung" class="seite aktiv">
+    <h2>Was passiert bei einer Redoxreaktion?</h2>
+    <p>In dieser Lerneinheit beschäftigen wir uns mit dem Thema Redoxreaktion.
+    Dazu schauen wir uns zunächst am Beispiel der Reaktion von Magnesium und Iod an,
+    was auf Teilchenebene passiert.</p>
+    <p>Das Video fasst nochmal kurz zusammen, was wir gerade gemeinsam besprochen haben:</p>
+
+    <video controls>
+      <source src="animation.mp4" type="video/mp4">
+      Dein Browser unterstützt kein Video.
+    </video>
+
+    <p><strong>Gesamtgleichung: &nbsp; Mg + I<sub>2</sub> &nbsp;→&nbsp; Mg<sup>2+</sup> + 2 I<sup>-</sup></strong></p>
+    <p><strong>Teilgleichungen:</strong></p>
+
+    <table class="gleichungen">
+      <tr>
+        <td class="oxidation" style="width:120px;">Oxidation:</td>
+        <td style="width:300px;" class="oxidation">Mg &nbsp;→&nbsp; Mg<sup>2+</sup> + 2e<sup>-</sup></td>
+        <td style="width:100px;"></td>
+        <td>Reduktionsmittel: Mg</td>
+      </tr>
+      <tr>
+        <td class="reduktion">Reduktion:</td>
+        <td class="reduktion">I<sub>2</sub> + 2e<sup>-</sup> &nbsp;→&nbsp; 2 I<sup>-</sup></td>
+        <td></td>
+        <td>Oxidationsmittel: I<sub>2</sub></td>
+      </tr>
+    </table>
+
+    <div class="merke">
+      <p>
+        <strong>Merke:</strong> Bei einer
+        <span class="reduktion">Red</span><span class="oxidation">ox</span>reaktion
+        werden Elektronen übertragen und es laufen
+        <span class="oxidation">Oxidation</span> und
+        <span class="reduktion">Reduktion</span>
+        gleichzeitig ab. Das Oxidationsmittel nimmt Elektronen auf und wird dabei
+        reduziert. Das Reduktionsmittel gibt Elektronen ab und wird dabei oxidiert.
+      </p>
+    </div>
+
+    <button class="weiter-btn" onclick="zeigeSeite('uebung')">
+      Weiter zu den Übungsaufgaben →
+    </button>
+  </div>
+
+  <!-- SEITE 2: ÜBUNG -->
+  <div id="uebung" class="seite">
+
+    <h2>Übungsaufgaben</h2>
+    <p>
+      1. <strong>Formuliere</strong> die Redoxreaktionsgleichung.<br>
+      2. <strong>Stelle</strong> die Teilgleichungen für Oxidation und Reduktion <strong>auf</strong>.<br>
+      3. <strong>Benenne</strong> das Reduktionsmittel und das Oxidationsmittel.
+    </p>
+
+    <div class="sonderzeichen-leiste">
+      <span>Sonderzeichen:</span>
+      <button class="sz-btn" onclick="einfuegen('⁺')">⁺</button>
+      <button class="sz-btn" onclick="einfuegen('²⁺')">²⁺</button>
+      <button class="sz-btn" onclick="einfuegen('³⁺')">³⁺</button>
+      <button class="sz-btn" onclick="einfuegen('⁻')">⁻</button>
+      <button class="sz-btn" onclick="einfuegen('²⁻')">²⁻</button>
+      <button class="sz-btn" onclick="einfuegen('³⁻')">³⁻</button>
+      <button class="sz-btn" onclick="einfuegen('₂')">₂</button>
+      <button class="sz-btn" onclick="einfuegen('₃')">₃</button>
+      <button class="sz-btn" onclick="einfuegen(' → ')"> → </button>
+      <button class="sz-btn" onclick="einfuegen(' + ')"> + </button>
+    </div>
+
+    <!-- AUFGABE 1: K + I2 -->
+    <div class="aufgabe">
+      <div class="aufgabe-header" onclick="toggleAufgabe('inhalt-a1', this)">
+        <h3>Aufgabe 1: Kalium + Iod</h3>
+        <span class="aufgabe-pfeil">▼</span>
+      </div>
+      <div class="aufgabe-inhalt" id="inhalt-a1">
+        <p class="wortgleichung">Kalium reagiert mit Iod zu Kaliumiodid.</p>
+
+        <span class="feld-label">Gesamtgleichung:</span>
+        <input type="text" class="freies-feld" id="ges-a1" onfocus="aktivesFelds = this"
+          data-antwort="2 K + I₂ → 2 K⁺ + 2 I⁻">
+
+        <span class="feld-label">Oxidationsgleichung:</span>
+        <input type="text" class="freies-feld" id="ox-a1" onfocus="aktivesFelds = this"
+          data-antwort="K → K⁺ + e⁻">
+
+        <span class="feld-label">Reduktionsgleichung:</span>
+        <input type="text" class="freies-feld" id="red-a1" onfocus="aktivesFelds = this"
+          data-antwort="I₂ + 2 e⁻ → 2 I⁻">
+
+        <span class="feld-label">Reduktionsmittel:</span>
+        <input type="text" class="freies-feld" id="rm-a1" onfocus="aktivesFelds = this"
+          data-antwort="K" style="width:200px;">
+
+        <span class="feld-label">Oxidationsmittel:</span>
+        <input type="text" class="freies-feld" id="om-a1" onfocus="aktivesFelds = this"
+          data-antwort="I₂" style="width:200px;">
+
+        <div class="hilfen">
+          <button class="hilfe-btn" onclick="toggleHilfe('h1-a1')">💡 Hilfe 1 – Valenzelektronen</button>
+          <div id="h1-a1" class="hilfe-box" style="display:none;">
+            <p>Kalium steht in der <strong>1. Hauptgruppe</strong> → 1 Valenzelektron → gibt 1 e⁻ ab.<br>
+            Iod steht in der <strong>7. Hauptgruppe</strong> → 7 Valenzelektronen → nimmt 1 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h2-a1')">💡 Hilfe 2 – Schema Teilgleichungen</button>
+          <div id="h2-a1" class="hilfe-box" style="display:none;">
+            <p>Nutze folgendes Schema:<br>
+            <strong>Oxidation:</strong> Metall → Metall⁺ + e⁻<br>
+            <strong>Reduktion:</strong> Nichtmetall + e⁻ → Nichtmetall⁻</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h3-a1')">💡 Hilfe 3 – Ionenladungen</button>
+          <div id="h3-a1" class="hilfe-box" style="display:none;">
+            <p>Kalium bildet <strong>K⁺</strong>, Iod bildet <strong>I⁻</strong>.<br>
+            Beachte: I₂ besteht aus 2 Iodatomen – beide nehmen je 1 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h4-a1')">💡 Hilfe 4 – Gleichung ausgleichen</button>
+          <div id="h4-a1" class="hilfe-box" style="display:none;">
+            <p>K gibt <strong>1 e⁻</strong> ab, I₂ nimmt <strong>2 e⁻</strong> auf.<br>
+            kgV von 1 und 2 = 2 → du brauchst <strong>2 K-Atome</strong>.<br>
+            Gesamtgleichung: 2 K + I₂ → 2 K⁺ + 2 I⁻</p>
+          </div>
+        </div>
+
+        <div class="btn-reihe">
+          <button class="pruefen-btn" onclick="pruefen('a1')">✓ Antworten überprüfen</button>
+          <button class="loesung-btn" onclick="toggleLoesung('loesung-a1')">Musterlösung anzeigen</button>
+        </div>
+        <div id="feedback-a1" class="feedback"></div>
+        <div id="loesung-a1" class="loesung" style="display:none;">
+          <p><strong>Gesamtgleichung:</strong> 2 K + I<sub>2</sub> → 2 K<sup>+</sup> + 2 I<sup>-</sup></p>
+          <table class="gleichungen">
+            <tr>
+              <td class="oxidation" style="width:120px;">Oxidation:</td>
+              <td class="oxidation">K → K<sup>+</sup> + e<sup>-</sup></td>
+              <td style="width:80px;"></td>
+              <td>Reduktionsmittel: K</td>
+            </tr>
+            <tr>
+              <td class="reduktion">Reduktion:</td>
+              <td class="reduktion">I<sub>2</sub> + 2e<sup>-</sup> → 2 I<sup>-</sup></td>
+              <td></td>
+              <td>Oxidationsmittel: I<sub>2</sub></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUFGABE 2: Ca + Br2 -->
+    <div class="aufgabe">
+      <div class="aufgabe-header" onclick="toggleAufgabe('inhalt-a2', this)">
+        <h3>Aufgabe 2: Calcium + Brom</h3>
+        <span class="aufgabe-pfeil">▼</span>
+      </div>
+      <div class="aufgabe-inhalt" id="inhalt-a2">
+        <p class="wortgleichung">Calcium reagiert mit Brom zu Calciumbromid.</p>
+
+        <span class="feld-label">Gesamtgleichung:</span>
+        <input type="text" class="freies-feld" id="ges-a2" onfocus="aktivesFelds = this"
+          data-antwort="Ca + Br₂ → Ca²⁺ + 2 Br⁻">
+
+        <span class="feld-label">Oxidationsgleichung:</span>
+        <input type="text" class="freies-feld" id="ox-a2" onfocus="aktivesFelds = this"
+          data-antwort="Ca → Ca²⁺ + 2 e⁻">
+
+        <span class="feld-label">Reduktionsgleichung:</span>
+        <input type="text" class="freies-feld" id="red-a2" onfocus="aktivesFelds = this"
+          data-antwort="Br₂ + 2 e⁻ → 2 Br⁻">
+
+        <span class="feld-label">Reduktionsmittel:</span>
+        <input type="text" class="freies-feld" id="rm-a2" onfocus="aktivesFelds = this"
+          data-antwort="Ca" style="width:200px;">
+
+        <span class="feld-label">Oxidationsmittel:</span>
+        <input type="text" class="freies-feld" id="om-a2" onfocus="aktivesFelds = this"
+          data-antwort="Br₂" style="width:200px;">
+
+        <div class="hilfen">
+          <button class="hilfe-btn" onclick="toggleHilfe('h1-a2')">💡 Hilfe 1 – Valenzelektronen</button>
+          <div id="h1-a2" class="hilfe-box" style="display:none;">
+            <p>Calcium steht in der <strong>2. Hauptgruppe</strong> → 2 Valenzelektronen → gibt 2 e⁻ ab.<br>
+            Brom steht in der <strong>7. Hauptgruppe</strong> → 7 Valenzelektronen → nimmt 1 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h2-a2')">💡 Hilfe 2 – Schema Teilgleichungen</button>
+          <div id="h2-a2" class="hilfe-box" style="display:none;">
+            <p>Nutze folgendes Schema:<br>
+            <strong>Oxidation:</strong> Metall → Metall²⁺ + 2 e⁻<br>
+            <strong>Reduktion:</strong> Nichtmetall + e⁻ → Nichtmetall⁻</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h3-a2')">💡 Hilfe 3 – Ionenladungen</button>
+          <div id="h3-a2" class="hilfe-box" style="display:none;">
+            <p>Calcium bildet <strong>Ca²⁺</strong>, Brom bildet <strong>Br⁻</strong>.<br>
+            Beachte: Br₂ besteht aus 2 Bromatomen – beide nehmen je 1 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h4-a2')">💡 Hilfe 4 – Gleichung ausgleichen</button>
+          <div id="h4-a2" class="hilfe-box" style="display:none;">
+            <p>Ca gibt <strong>2 e⁻</strong> ab, Br₂ nimmt <strong>2 e⁻</strong> auf.<br>
+            kgV von 2 und 2 = 2 → passt direkt, kein weiterer Koeffizient nötig.<br>
+            Gesamtgleichung: Ca + Br₂ → Ca²⁺ + 2 Br⁻</p>
+          </div>
+        </div>
+
+        <div class="btn-reihe">
+          <button class="pruefen-btn" onclick="pruefen('a2')">✓ Antworten überprüfen</button>
+          <button class="loesung-btn" onclick="toggleLoesung('loesung-a2')">Musterlösung anzeigen</button>
+        </div>
+        <div id="feedback-a2" class="feedback"></div>
+        <div id="loesung-a2" class="loesung" style="display:none;">
+          <p><strong>Gesamtgleichung:</strong> Ca + Br<sub>2</sub> → Ca<sup>2+</sup> + 2 Br<sup>-</sup></p>
+          <table class="gleichungen">
+            <tr>
+              <td class="oxidation" style="width:120px;">Oxidation:</td>
+              <td class="oxidation">Ca → Ca<sup>2+</sup> + 2e<sup>-</sup></td>
+              <td style="width:80px;"></td>
+              <td>Reduktionsmittel: Ca</td>
+            </tr>
+            <tr>
+              <td class="reduktion">Reduktion:</td>
+              <td class="reduktion">Br<sub>2</sub> + 2e<sup>-</sup> → 2 Br<sup>-</sup></td>
+              <td></td>
+              <td>Oxidationsmittel: Br<sub>2</sub></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUFGABE 3: Li + Cl2 -->
+    <div class="aufgabe">
+      <div class="aufgabe-header" onclick="toggleAufgabe('inhalt-a3', this)">
+        <h3>Aufgabe 3: Lithium + Chlor</h3>
+        <span class="aufgabe-pfeil">▼</span>
+      </div>
+      <div class="aufgabe-inhalt" id="inhalt-a3">
+        <p class="wortgleichung">Lithium reagiert mit Chlor zu Lithiumchlorid.</p>
+
+        <span class="feld-label">Gesamtgleichung:</span>
+        <input type="text" class="freies-feld" id="ges-a3" onfocus="aktivesFelds = this"
+          data-antwort="2 Li + Cl₂ → 2 Li⁺ + 2 Cl⁻">
+
+        <span class="feld-label">Oxidationsgleichung:</span>
+        <input type="text" class="freies-feld" id="ox-a3" onfocus="aktivesFelds = this"
+          data-antwort="Li → Li⁺ + e⁻">
+
+        <span class="feld-label">Reduktionsgleichung:</span>
+        <input type="text" class="freies-feld" id="red-a3" onfocus="aktivesFelds = this"
+          data-antwort="Cl₂ + 2 e⁻ → 2 Cl⁻">
+
+        <span class="feld-label">Reduktionsmittel:</span>
+        <input type="text" class="freies-feld" id="rm-a3" onfocus="aktivesFelds = this"
+          data-antwort="Li" style="width:200px;">
+
+        <span class="feld-label">Oxidationsmittel:</span>
+        <input type="text" class="freies-feld" id="om-a3" onfocus="aktivesFelds = this"
+          data-antwort="Cl₂" style="width:200px;">
+
+        <div class="hilfen">
+          <button class="hilfe-btn" onclick="toggleHilfe('h1-a3')">💡 Hilfe 1 – Valenzelektronen</button>
+          <div id="h1-a3" class="hilfe-box" style="display:none;">
+            <p>Lithium steht in der <strong>1. Hauptgruppe</strong> → 1 Valenzelektron → gibt 1 e⁻ ab.<br>
+            Chlor steht in der <strong>7. Hauptgruppe</strong> → 7 Valenzelektronen → nimmt 1 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h2-a3')">💡 Hilfe 2 – Schema Teilgleichungen</button>
+          <div id="h2-a3" class="hilfe-box" style="display:none;">
+            <p>Nutze folgendes Schema:<br>
+            <strong>Oxidation:</strong> Metall → Metall⁺ + e⁻<br>
+            <strong>Reduktion:</strong> Nichtmetall + e⁻ → Nichtmetall⁻</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h3-a3')">💡 Hilfe 3 – Ionenladungen</button>
+          <div id="h3-a3" class="hilfe-box" style="display:none;">
+            <p>Lithium bildet <strong>Li⁺</strong>, Chlor bildet <strong>Cl⁻</strong>.<br>
+            Beachte: Cl₂ besteht aus 2 Chloratomen – beide nehmen je 1 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h4-a3')">💡 Hilfe 4 – Gleichung ausgleichen</button>
+          <div id="h4-a3" class="hilfe-box" style="display:none;">
+            <p>Li gibt <strong>1 e⁻</strong> ab, Cl₂ nimmt <strong>2 e⁻</strong> auf.<br>
+            kgV von 1 und 2 = 2 → du brauchst <strong>2 Li-Atome</strong>.<br>
+            Gesamtgleichung: 2 Li + Cl₂ → 2 Li⁺ + 2 Cl⁻</p>
+          </div>
+        </div>
+
+        <div class="btn-reihe">
+          <button class="pruefen-btn" onclick="pruefen('a3')">✓ Antworten überprüfen</button>
+          <button class="loesung-btn" onclick="toggleLoesung('loesung-a3')">Musterlösung anzeigen</button>
+        </div>
+        <div id="feedback-a3" class="feedback"></div>
+        <div id="loesung-a3" class="loesung" style="display:none;">
+          <p><strong>Gesamtgleichung:</strong> 2 Li + Cl<sub>2</sub> → 2 Li<sup>+</sup> + 2 Cl<sup>-</sup></p>
+          <table class="gleichungen">
+            <tr>
+              <td class="oxidation" style="width:120px;">Oxidation:</td>
+              <td class="oxidation">Li → Li<sup>+</sup> + e<sup>-</sup></td>
+              <td style="width:80px;"></td>
+              <td>Reduktionsmittel: Li</td>
+            </tr>
+            <tr>
+              <td class="reduktion">Reduktion:</td>
+              <td class="reduktion">Cl<sub>2</sub> + 2e<sup>-</sup> → 2 Cl<sup>-</sup></td>
+              <td></td>
+              <td>Oxidationsmittel: Cl<sub>2</sub></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUFGABE 4: Na + S -->
+    <div class="aufgabe">
+      <div class="aufgabe-header" onclick="toggleAufgabe('inhalt-a4', this)">
+        <h3>Aufgabe 4: Natrium + Schwefel</h3>
+        <span class="aufgabe-pfeil">▼</span>
+      </div>
+      <div class="aufgabe-inhalt" id="inhalt-a4">
+        <p class="wortgleichung">Natrium reagiert mit Schwefel zu Natriumsulfid.</p>
+
+        <span class="feld-label">Gesamtgleichung:</span>
+        <input type="text" class="freies-feld" id="ges-a4" onfocus="aktivesFelds = this"
+          data-antwort="2 Na + S → 2 Na⁺ + S²⁻">
+
+        <span class="feld-label">Oxidationsgleichung:</span>
+        <input type="text" class="freies-feld" id="ox-a4" onfocus="aktivesFelds = this"
+          data-antwort="Na → Na⁺ + e⁻">
+
+        <span class="feld-label">Reduktionsgleichung:</span>
+        <input type="text" class="freies-feld" id="red-a4" onfocus="aktivesFelds = this"
+          data-antwort="S + 2 e⁻ → S²⁻">
+
+        <span class="feld-label">Reduktionsmittel:</span>
+        <input type="text" class="freies-feld" id="rm-a4" onfocus="aktivesFelds = this"
+          data-antwort="Na" style="width:200px;">
+
+        <span class="feld-label">Oxidationsmittel:</span>
+        <input type="text" class="freies-feld" id="om-a4" onfocus="aktivesFelds = this"
+          data-antwort="S" style="width:200px;">
+
+        <div class="hilfen">
+          <button class="hilfe-btn" onclick="toggleHilfe('h1-a4')">💡 Hilfe 1 – Valenzelektronen</button>
+          <div id="h1-a4" class="hilfe-box" style="display:none;">
+            <p>Natrium steht in der <strong>1. Hauptgruppe</strong> → 1 Valenzelektron → gibt 1 e⁻ ab.<br>
+            Schwefel steht in der <strong>6. Hauptgruppe</strong> → 6 Valenzelektronen → nimmt 2 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h2-a4')">💡 Hilfe 2 – Schema Teilgleichungen</button>
+          <div id="h2-a4" class="hilfe-box" style="display:none;">
+            <p>Nutze folgendes Schema:<br>
+            <strong>Oxidation:</strong> Metall → Metall⁺ + e⁻<br>
+            <strong>Reduktion:</strong> Nichtmetall + 2 e⁻ → Nichtmetall²⁻</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h3-a4')">💡 Hilfe 3 – Ionenladungen</button>
+          <div id="h3-a4" class="hilfe-box" style="display:none;">
+            <p>Natrium bildet <strong>Na⁺</strong>, Schwefel bildet <strong>S²⁻</strong>.<br>
+            Schwefel liegt hier als einzelnes Atom vor – kein Index nötig.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h4-a4')">💡 Hilfe 4 – Gleichung ausgleichen</button>
+          <div id="h4-a4" class="hilfe-box" style="display:none;">
+            <p>Na gibt <strong>1 e⁻</strong> ab, S nimmt <strong>2 e⁻</strong> auf.<br>
+            kgV von 1 und 2 = 2 → du brauchst <strong>2 Na-Atome</strong>.<br>
+            Gesamtgleichung: 2 Na + S → 2 Na⁺ + S²⁻</p>
+          </div>
+        </div>
+
+        <div class="btn-reihe">
+          <button class="pruefen-btn" onclick="pruefen('a4')">✓ Antworten überprüfen</button>
+          <button class="loesung-btn" onclick="toggleLoesung('loesung-a4')">Musterlösung anzeigen</button>
+        </div>
+        <div id="feedback-a4" class="feedback"></div>
+        <div id="loesung-a4" class="loesung" style="display:none;">
+          <p><strong>Gesamtgleichung:</strong> 2 Na + S → 2 Na<sup>+</sup> + S<sup>2-</sup></p>
+          <table class="gleichungen">
+            <tr>
+              <td class="oxidation" style="width:120px;">Oxidation:</td>
+              <td class="oxidation">Na → Na<sup>+</sup> + e<sup>-</sup></td>
+              <td style="width:80px;"></td>
+              <td>Reduktionsmittel: Na</td>
+            </tr>
+            <tr>
+              <td class="reduktion">Reduktion:</td>
+              <td class="reduktion">S + 2e<sup>-</sup> → S<sup>2-</sup></td>
+              <td></td>
+              <td>Oxidationsmittel: S</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUFGABE 5: Mg + O2 -->
+    <div class="aufgabe">
+      <div class="aufgabe-header" onclick="toggleAufgabe('inhalt-a5', this)">
+        <h3>Aufgabe 5: Magnesium + Sauerstoff</h3>
+        <span class="aufgabe-pfeil">▼</span>
+      </div>
+      <div class="aufgabe-inhalt" id="inhalt-a5">
+        <p class="wortgleichung">Magnesium reagiert mit Sauerstoff zu Magnesiumoxid.</p>
+
+        <span class="feld-label">Gesamtgleichung:</span>
+        <input type="text" class="freies-feld" id="ges-a5" onfocus="aktivesFelds = this"
+          data-antwort="2 Mg + O₂ → 2 Mg²⁺ + 2 O²⁻">
+
+        <span class="feld-label">Oxidationsgleichung:</span>
+        <input type="text" class="freies-feld" id="ox-a5" onfocus="aktivesFelds = this"
+          data-antwort="Mg → Mg²⁺ + 2 e⁻">
+
+        <span class="feld-label">Reduktionsgleichung:</span>
+        <input type="text" class="freies-feld" id="red-a5" onfocus="aktivesFelds = this"
+          data-antwort="O₂ + 4 e⁻ → 2 O²⁻">
+
+        <span class="feld-label">Reduktionsmittel:</span>
+        <input type="text" class="freies-feld" id="rm-a5" onfocus="aktivesFelds = this"
+          data-antwort="Mg" style="width:200px;">
+
+        <span class="feld-label">Oxidationsmittel:</span>
+        <input type="text" class="freies-feld" id="om-a5" onfocus="aktivesFelds = this"
+          data-antwort="O₂" style="width:200px;">
+
+        <div class="hilfen">
+          <button class="hilfe-btn" onclick="toggleHilfe('h1-a5')">💡 Hilfe 1 – Valenzelektronen</button>
+          <div id="h1-a5" class="hilfe-box" style="display:none;">
+            <p>Magnesium steht in der <strong>2. Hauptgruppe</strong> → 2 Valenzelektronen → gibt 2 e⁻ ab.<br>
+            Sauerstoff steht in der <strong>6. Hauptgruppe</strong> → 6 Valenzelektronen → nimmt 2 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h2-a5')">💡 Hilfe 2 – Schema Teilgleichungen</button>
+          <div id="h2-a5" class="hilfe-box" style="display:none;">
+            <p>Nutze folgendes Schema:<br>
+            <strong>Oxidation:</strong> Metall → Metall²⁺ + 2 e⁻<br>
+            <strong>Reduktion:</strong> Nichtmetall + 2 e⁻ → Nichtmetall²⁻</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h3-a5')">💡 Hilfe 3 – Ionenladungen</button>
+          <div id="h3-a5" class="hilfe-box" style="display:none;">
+            <p>Magnesium bildet <strong>Mg²⁺</strong>, Sauerstoff bildet <strong>O²⁻</strong>.<br>
+            Beachte: O₂ besteht aus 2 Sauerstoffatomen – beide nehmen je 2 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h4-a5')">💡 Hilfe 4 – Gleichung ausgleichen</button>
+          <div id="h4-a5" class="hilfe-box" style="display:none;">
+            <p>Mg gibt <strong>2 e⁻</strong> ab, O₂ nimmt insgesamt <strong>4 e⁻</strong> auf.<br>
+            kgV von 2 und 4 = 4 → du brauchst <strong>2 Mg-Atome</strong>.<br>
+            Gesamtgleichung: 2 Mg + O₂ → 2 Mg²⁺ + 2 O²⁻</p>
+          </div>
+        </div>
+
+        <div class="btn-reihe">
+          <button class="pruefen-btn" onclick="pruefen('a5')">✓ Antworten überprüfen</button>
+          <button class="loesung-btn" onclick="toggleLoesung('loesung-a5')">Musterlösung anzeigen</button>
+        </div>
+        <div id="feedback-a5" class="feedback"></div>
+        <div id="loesung-a5" class="loesung" style="display:none;">
+          <p><strong>Gesamtgleichung:</strong> 2 Mg + O<sub>2</sub> → 2 Mg<sup>2+</sup> + 2 O<sup>2-</sup></p>
+          <table class="gleichungen">
+            <tr>
+              <td class="oxidation" style="width:120px;">Oxidation:</td>
+              <td class="oxidation">Mg → Mg<sup>2+</sup> + 2e<sup>-</sup></td>
+              <td style="width:80px;"></td>
+              <td>Reduktionsmittel: Mg</td>
+            </tr>
+            <tr>
+              <td class="reduktion">Reduktion:</td>
+              <td class="reduktion">O<sub>2</sub> + 4e<sup>-</sup> → 2 O<sup>2-</sup></td>
+              <td></td>
+              <td>Oxidationsmittel: O<sub>2</sub></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUFGABE 6: Al + O2 -->
+    <div class="aufgabe">
+      <div class="aufgabe-header" onclick="toggleAufgabe('inhalt-a6', this)">
+        <h3>Aufgabe 6: Aluminium + Sauerstoff</h3>
+        <span class="aufgabe-pfeil">▼</span>
+      </div>
+      <div class="aufgabe-inhalt" id="inhalt-a6">
+        <p class="wortgleichung">Aluminium reagiert mit Sauerstoff zu Aluminiumoxid.</p>
+
+        <span class="feld-label">Gesamtgleichung:</span>
+        <input type="text" class="freies-feld" id="ges-a6" onfocus="aktivesFelds = this"
+          data-antwort="4 Al + 3 O₂ → 4 Al³⁺ + 6 O²⁻">
+
+        <span class="feld-label">Oxidationsgleichung:</span>
+        <input type="text" class="freies-feld" id="ox-a6" onfocus="aktivesFelds = this"
+          data-antwort="Al → Al³⁺ + 3 e⁻">
+
+        <span class="feld-label">Reduktionsgleichung:</span>
+        <input type="text" class="freies-feld" id="red-a6" onfocus="aktivesFelds = this"
+          data-antwort="O₂ + 4 e⁻ → 2 O²⁻">
+
+        <span class="feld-label">Reduktionsmittel:</span>
+        <input type="text" class="freies-feld" id="rm-a6" onfocus="aktivesFelds = this"
+          data-antwort="Al" style="width:200px;">
+
+        <span class="feld-label">Oxidationsmittel:</span>
+        <input type="text" class="freies-feld" id="om-a6" onfocus="aktivesFelds = this"
+          data-antwort="O₂" style="width:200px;">
+
+        <div class="hilfen">
+          <button class="hilfe-btn" onclick="toggleHilfe('h1-a6')">💡 Hilfe 1 – Valenzelektronen</button>
+          <div id="h1-a6" class="hilfe-box" style="display:none;">
+            <p>Aluminium steht in der <strong>3. Hauptgruppe</strong> → 3 Valenzelektronen → gibt 3 e⁻ ab.<br>
+            Sauerstoff steht in der <strong>6. Hauptgruppe</strong> → 6 Valenzelektronen → nimmt 2 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h2-a6')">💡 Hilfe 2 – Schema Teilgleichungen</button>
+          <div id="h2-a6" class="hilfe-box" style="display:none;">
+            <p>Nutze folgendes Schema:<br>
+            <strong>Oxidation:</strong> Metall → Metall³⁺ + 3 e⁻<br>
+            <strong>Reduktion:</strong> Nichtmetall + 2 e⁻ → Nichtmetall²⁻</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h3-a6')">💡 Hilfe 3 – Ionenladungen</button>
+          <div id="h3-a6" class="hilfe-box" style="display:none;">
+            <p>Aluminium bildet <strong>Al³⁺</strong>, Sauerstoff bildet <strong>O²⁻</strong>.<br>
+            Beachte: O₂ besteht aus 2 Sauerstoffatomen – beide nehmen je 2 e⁻ auf.</p>
+          </div>
+          <button class="hilfe-btn" onclick="toggleHilfe('h4-a6')">💡 Hilfe 4 – Gleichung ausgleichen</button>
+          <div id="h4-a6" class="hilfe-box" style="display:none;">
+            <p>Al gibt <strong>3 e⁻</strong> ab, O₂ nimmt insgesamt <strong>4 e⁻</strong> auf.<br>
+            kgV von 3 und 4 = 12 → du brauchst <strong>4 Al-Atome</strong> und <strong>3 O₂-Moleküle</strong>.<br>
+            Gesamtgleichung: 4 Al + 3 O₂ → 4 Al³⁺ + 6 O²⁻</p>
+          </div>
+        </div>
+
+        <div class="btn-reihe">
+          <button class="pruefen-btn" onclick="pruefen('a6')">✓ Antworten überprüfen</button>
+          <button class="loesung-btn" onclick="toggleLoesung('loesung-a6')">Musterlösung anzeigen</button>
+        </div>
+        <div id="feedback-a6" class="feedback"></div>
+        <div id="loesung-a6" class="loesung" style="display:none;">
+          <p><strong>Gesamtgleichung:</strong> 4 Al + 3 O<sub>2</sub> → 4 Al<sup>3+</sup> + 6 O<sup>2-</sup></p>
+          <table class="gleichungen">
+            <tr>
+              <td class="oxidation" style="width:120px;">Oxidation:</td>
+              <td class="oxidation">Al → Al<sup>3+</sup> + 3e<sup>-</sup></td>
+              <td style="width:80px;"></td>
+              <td>Reduktionsmittel: Al</td>
+            </tr>
+            <tr>
+              <td class="reduktion">Reduktion:</td>
+              <td class="reduktion">O<sub>2</sub> + 4e<sup>-</sup> → 2 O<sup>2-</sup></td>
+              <td></td>
+              <td>Oxidationsmittel: O<sub>2</sub></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- Ende Seite Übung -->
+
+  <script>
+    let aktivesFelds = null;
+
+    function einfuegen(zeichen) {
+      if (aktivesFelds) {
+        const start = aktivesFelds.selectionStart;
+        const end = aktivesFelds.selectionEnd;
+        const wert = aktivesFelds.value;
+        aktivesFelds.value = wert.slice(0, start) + zeichen + wert.slice(end);
+        aktivesFelds.selectionStart = aktivesFelds.selectionEnd = start + zeichen.length;
+        aktivesFelds.focus();
+      }
+    }
+
+    function normalisiere(text) {
+      return text.trim()
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .replace(/\s*→\s*/g, '→')
+        .replace(/\s*\+\s*/g, '+');
+    }
+
+    function pruefen(aufgabeId) {
+      const felder = document.querySelectorAll(`#inhalt-${aufgabeId} .freies-feld`);
+      let richtig = 0;
+      let ausgefuellt = 0;
+
+      felder.forEach(feld => {
+        feld.classList.remove('richtig', 'falsch');
+        if (feld.value.trim() === '') return;
+        ausgefuellt++;
+        const eingabe = normalisiere(feld.value);
+        const antwort = normalisiere(feld.dataset.antwort);
+        if (eingabe === antwort) {
+          feld.classList.add('richtig');
+          richtig++;
+        } else {
+          feld.classList.add('falsch');
+        }
+      });
+
+      const feedback = document.getElementById(`feedback-${aufgabeId}`);
+      feedback.style.display = 'block';
+      feedback.className = 'feedback';
+
+      if (ausgefuellt === 0) {
+        feedback.classList.add('falsch-alle');
+        feedback.textContent = 'Bitte fülle zuerst die Felder aus.';
+      } else if (richtig === felder.length) {
+        feedback.classList.add('richtig-alle');
+        feedback.textContent = '✓ Alle Antworten sind richtig! Super gemacht!';
+      } else if (richtig > 0) {
+        feedback.classList.add('teilweise');
+        feedback.textContent = `${richtig} von ${felder.length} Antworten sind richtig. Schau nochmal bei den roten Feldern nach.`;
+      } else {
+        feedback.classList.add('falsch-alle');
+        feedback.textContent = 'Noch nicht ganz richtig. Nutze die Hilfe-Buttons oder schau dir die Musterlösung an.';
+      }
+    }
+
+    function toggleAufgabe(inhaltId, header) {
+      const inhalt = document.getElementById(inhaltId);
+      const pfeil = header.querySelector('.aufgabe-pfeil');
+      inhalt.classList.toggle('offen');
+      header.classList.toggle('offen');
+      pfeil.classList.toggle('offen');
+    }
+
+    function zeigeSeite(id) {
+      document.querySelectorAll('.seite').forEach(s => s.classList.remove('aktiv'));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('aktiv'));
+      document.getElementById(id).classList.add('aktiv');
+      const buttons = document.querySelectorAll('.nav button');
+      if (id === 'erklaerung') buttons[0].classList.add('aktiv');
+      if (id === 'uebung') buttons[1].classList.add('aktiv');
+    }
+
+    function toggleHilfe(id) {
+      const box = document.getElementById(id);
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function toggleLoesung(id) {
+      const box = document.getElementById(id);
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+  </script>
+
 </body>
 </html>
